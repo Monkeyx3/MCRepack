@@ -3,24 +3,63 @@ package mcrepack;
 import javax.swing.*;
 import java.io.*;
 import java.awt.event.*;
+import java.awt.*;
 
 public class MCRepack extends JFrame implements ActionListener
 {
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        System.out.println(e);
+        if (e.getActionCommand().equals("Start"))
+        {
+            try
+            {
+                realm = runtime.exec("startrealm"); //Command will be added if I has prepared the server files
+            } catch (IOException io){JOptionPane.showMessageDialog(null, io, "Error", JOptionPane.ERROR_MESSAGE);}
+        }
+        
+        else if (e.getActionCommand().equals("Stop"))
+        {
+            try
+            {
+                realm.destroy();
+            } catch (Exception ex){JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);}
+        }
+        
+        else if (e.getActionCommand().equals("Restart"))
+        {
+            try
+            {
+                realm.destroy();
+                realm = runtime.exec("startrealm"); //Command will be added if I has prepared the server files
+            } catch (Exception ex){JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);}
+        }
+        
+        else if (e.getActionCommand().equals("Configuration"))
+        {
+            //Will be handled later
+            //new ConfigurationManager();
+        }
+        
+        else if (e.getActionCommand().equals("quit"))
+        {
+            dispose(); //Quit program
+        }
+        
     }
     
     public MCRepack()
     {
         setSize(600,600);
-        //setLocation(100,100);
+        setLocation(100,100);
         setLayout(null);
-        //setResizable(false);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Container con = getContentPane();
+        con.setBackground(Color.DARK_GRAY);
         initGUIElements();
         getOperatingSystem();
+        runtime = Runtime.getRuntime();
     }
     
     private void initGUIElements()
@@ -31,7 +70,7 @@ public class MCRepack extends JFrame implements ActionListener
         confServer = new JButton("Configuration");
         menuBar = new JMenuBar();
         file = new JMenu("File");
-        exit = new JMenuItem("Exit");
+        exit = new JMenuItem("quit");
         
         startRealm.setBounds(10, 500, 130, 30);
         stopRealm.setBounds(150, 500, 130, 30);
@@ -46,6 +85,12 @@ public class MCRepack extends JFrame implements ActionListener
         menuBar.add(file);
         file.add(exit);
         add(menuBar);
+        
+        startRealm.addActionListener(this);
+        stopRealm.addActionListener(this);
+        restartRealm.addActionListener(this);
+        confServer.addActionListener(this);
+        exit.addActionListener(this);
     }
     
     private void getOperatingSystem()
@@ -103,7 +148,7 @@ public class MCRepack extends JFrame implements ActionListener
             opt.setVisible(true);
         }
     }
-    
+        
     public static void main(String[] args) 
     {
         new MCRepack();
@@ -118,4 +163,6 @@ public class MCRepack extends JFrame implements ActionListener
     private JMenuBar menuBar;
     private JMenu file;
     private JMenuItem exit;
+    private Runtime runtime;
+    private Process realm;
 }
