@@ -4,15 +4,51 @@ import javax.swing.*;
 import java.io.*;
 import java.awt.event.*;
 
-public class MCRepack extends JFrame
+public class MCRepack extends JFrame implements ActionListener
 {
-    public MCRepack()
+    @Override
+    public void actionPerformed(ActionEvent e)
     {
-        getOperatingSystem();
-        initWindow();
+        System.out.println(e);
     }
     
-    void getOperatingSystem()
+    public MCRepack()
+    {
+        setSize(600,600);
+        //setLocation(100,100);
+        setLayout(null);
+        //setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        initGUIElements();
+        getOperatingSystem();
+    }
+    
+    private void initGUIElements()
+    {
+        startRealm = new JButton("Start");
+        stopRealm = new JButton("Stop");
+        restartRealm = new JButton("Restart");
+        confServer = new JButton("Configuration");
+        menuBar = new JMenuBar();
+        file = new JMenu("File");
+        exit = new JMenuItem("Exit");
+        
+        startRealm.setBounds(10, 500, 130, 30);
+        stopRealm.setBounds(150, 500, 130, 30);
+        restartRealm.setBounds(300, 500, 130, 30);
+        confServer.setBounds(450, 500, 130, 30);
+        menuBar.setBounds(0, getInsets().top, getWidth(), 20);
+        
+        add(startRealm);
+        add(stopRealm);
+        add(restartRealm);
+        add(confServer);
+        menuBar.add(file);
+        file.add(exit);
+        add(menuBar);
+    }
+    
+    private void getOperatingSystem()
     {
         try
         {
@@ -68,15 +104,6 @@ public class MCRepack extends JFrame
         }
     }
     
-    private void initWindow()
-    {
-        setSize(600,400);
-        setLocation(100,100);
-        setLayout(null);
-        setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-    
     public static void main(String[] args) 
     {
         new MCRepack();
@@ -87,4 +114,8 @@ public class MCRepack extends JFrame
     private ObjectOutputStream oos;
     private OutputStream os;
     private int[] options;
+    private JButton startRealm, stopRealm, restartRealm, confServer;
+    private JMenuBar menuBar;
+    private JMenu file;
+    private JMenuItem exit;
 }
