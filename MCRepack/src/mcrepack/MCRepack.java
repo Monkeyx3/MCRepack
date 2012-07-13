@@ -4,14 +4,55 @@ import javax.swing.*;
 import java.io.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.util.*;
 
-public class MCRepack extends JFrame implements ActionListener
+public class MCRepack extends JFrame implements ActionListener, Runnable
 {
+    @Override
+    public void run()
+    {  
+        try 
+        {
+            readLog = new Scanner(new File(System.getProperty("java.class.path").split("MCRepack.jar")[0]+"logs/"+"Server.log"));
+        } 
+        
+        catch (Exception e) 
+        {
+            log.setText("Server.log not found!");
+            logThread.stop();
+        }
+        
+        while (true)
+        {
+            
+            if (readLog.hasNextLine())
+                log.setText(log.getText()+readLog.nextLine()+"\n");
+            
+            /*else //Have to rewrite something
+            {
+                try 
+                {
+                    Thread.sleep(2000);
+                    readLog = new Scanner(new File("logs/Server.log"));
+                } 
+
+                catch (Exception e) 
+                {
+                    log.setText("Server.log not found!");
+                    logThread.stop();
+                }
+            }*/
+        }
+        
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e)
     {
         if (e.getActionCommand().equals("Start"))
         {
+            logThread = new Thread(this);
+            logThread.start();
             try
             {
                 realm = runtime.exec("startrealm"); //Command will be added if I has prepared the server files
@@ -20,6 +61,10 @@ public class MCRepack extends JFrame implements ActionListener
         
         else if (e.getActionCommand().equals("Stop"))
         {
+            try
+            {
+                logThread.stop();
+            } catch (Exception t){System.out.println("Not started");}
             try
             {
                 realm.destroy();
@@ -43,9 +88,27 @@ public class MCRepack extends JFrame implements ActionListener
         
         else if (e.getActionCommand().equals("quit"))
         {
-            dispose(); //Quit program
+            doExitProgram();
         }
         
+    }
+    
+    private void doExitProgram()
+    {
+        if (isStarted) 
+        {
+            int temp = JOptionPane.showConfirmDialog(null, "Do you want to shutdown your realm?",
+                    "Quit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (temp == 0) 
+            {
+                if (realm != null) 
+                {
+                    realm.destroy();
+                }
+            }
+        }
+
+        dispose();
     }
     
     public MCRepack()
@@ -71,12 +134,17 @@ public class MCRepack extends JFrame implements ActionListener
         menuBar = new JMenuBar();
         file = new JMenu("File");
         exit = new JMenuItem("quit");
-        
+        log = new JTextArea();
+        log.setEditable(false);
+        sp = new JScrollPane(log);
+        sp.setAutoscrolls(true);
+
         startRealm.setBounds(10, 500, 130, 30);
         stopRealm.setBounds(150, 500, 130, 30);
         restartRealm.setBounds(300, 500, 130, 30);
         confServer.setBounds(450, 500, 130, 30);
         menuBar.setBounds(0, getInsets().top, getWidth(), 20);
+        sp.setBounds(50, 30, 500, 400);
         
         add(startRealm);
         add(stopRealm);
@@ -85,6 +153,7 @@ public class MCRepack extends JFrame implements ActionListener
         menuBar.add(file);
         file.add(exit);
         add(menuBar);
+        add(sp);
         
         startRealm.addActionListener(this);
         stopRealm.addActionListener(this);
@@ -165,4 +234,9 @@ public class MCRepack extends JFrame implements ActionListener
     private JMenuItem exit;
     private Runtime runtime;
     private Process realm;
+    private JTextArea log;
+    private JScrollPane sp;
+    private boolean isStarted;
+    private Scanner readLog;
+    private Thread logThread;
 }
