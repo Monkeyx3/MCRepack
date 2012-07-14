@@ -24,7 +24,6 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
         }
         
         String temp = "";
-        int line = 0;
         
         while (true)
         {
@@ -32,17 +31,14 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
             {  
                 temp = readLog.readLine();
                 if (temp != null)
-                {
                     log.setText(log.getText()+temp+"\n");
-                    line++;
-                }
 
                 else //Have to rewrite something
                 {
                     try 
                     {
                         fr = new FileReader(new File(System.getProperty("java.class.path").split("MCRepack.jar")[0]+"logs/"+"Server.log"));
-                        //readLog = new BufferedReader(fr); 
+                        Thread.sleep(500);
                     } 
 
                     catch (Exception e) 
@@ -51,7 +47,6 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
                         logThread.stop();
                     }
                     
-                   // readLog.skip(line);
                 }
             } 
             catch (Exception readException){}
