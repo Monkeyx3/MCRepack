@@ -114,8 +114,7 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
         
         else if (e.getActionCommand().equals("Configuration"))
         {
-            //Will be handled later
-            //new ConfigurationManager();
+            new ConfigurationManager();
         }
         
         else if (e.getActionCommand().equals("quit"))
