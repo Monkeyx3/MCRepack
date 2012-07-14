@@ -13,7 +13,8 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
     {  
         try 
         {
-            readLog = new Scanner(new File(System.getProperty("java.class.path").split("MCRepack.jar")[0]+"logs/"+"Server.log"));
+            fr = new FileReader(new File(System.getProperty("java.class.path").split("MCRepack.jar")[0]+"logs/"+"Server.log"));
+            readLog = new BufferedReader(fr); 
         } 
         
         catch (Exception e) 
@@ -22,26 +23,38 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
             logThread.stop();
         }
         
+        String temp = "";
+        int line = 0;
+        
         while (true)
         {
-            
-            if (readLog.hasNextLine())
-                log.setText(log.getText()+readLog.nextLine()+"\n");
-            
-            /*else //Have to rewrite something
-            {
-                try 
+            try
+            {  
+                temp = readLog.readLine();
+                if (temp != null)
                 {
-                    Thread.sleep(2000);
-                    readLog = new Scanner(new File("logs/Server.log"));
-                } 
-
-                catch (Exception e) 
-                {
-                    log.setText("Server.log not found!");
-                    logThread.stop();
+                    log.setText(log.getText()+temp+"\n");
+                    line++;
                 }
-            }*/
+
+                else //Have to rewrite something
+                {
+                    try 
+                    {
+                        fr = new FileReader(new File(System.getProperty("java.class.path").split("MCRepack.jar")[0]+"logs/"+"Server.log"));
+                        //readLog = new BufferedReader(fr); 
+                    } 
+
+                    catch (Exception e) 
+                    {
+                        log.setText("Server.log not found!");
+                        logThread.stop();
+                    }
+                    
+                   // readLog.skip(line);
+                }
+            } 
+            catch (Exception readException){}
         }
         
     }
@@ -237,6 +250,7 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
     private JTextArea log;
     private JScrollPane sp;
     private boolean isStarted;
-    private Scanner readLog;
+    private FileReader fr;
+    private BufferedReader readLog; 
     private Thread logThread;
 }
