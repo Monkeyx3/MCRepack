@@ -63,7 +63,17 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
             logThread.start();
             try
             {
-                realm = runtime.exec("startrealm"); //Command will be added if I has prepared the server files
+                if (options[0] == 0)
+                {
+                    auth = runtime.exec(System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/authserver.exe");
+                    realm = runtime.exec(System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/worldserver.exe");
+                }
+                
+                else if (options[0] == 1)
+                {
+                    auth = runtime.exec("./"+System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/authserver");
+                    realm = runtime.exec("./"+System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/worldserver");
+                }
             } catch (IOException io){JOptionPane.showMessageDialog(null, io, "Error", JOptionPane.ERROR_MESSAGE);}
         }
         
@@ -76,6 +86,7 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
             try
             {
                 realm.destroy();
+                auth.destroy();
             } catch (Exception ex){JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);}
         }
         
@@ -84,7 +95,20 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
             try
             {
                 realm.destroy();
-                realm = runtime.exec("startrealm"); //Command will be added if I has prepared the server files
+                auth.destroy();
+                
+                if (options[0] == 0)
+                {
+                    auth = runtime.exec(System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/authserver.exe");
+                    realm = runtime.exec(System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/worldserver.exe");
+                }
+                
+                else if (options[0] == 1)
+                {
+                    auth = runtime.exec("./"+System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/authserver");
+                    realm = runtime.exec("./"+System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/worldserver");
+                }
+                
             } catch (Exception ex){JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);}
         }
         
@@ -241,7 +265,7 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
     private JMenu file;
     private JMenuItem exit;
     private Runtime runtime;
-    private Process realm;
+    private Process realm, auth;
     private JTextArea log;
     private JScrollPane sp;
     private boolean isStarted;
