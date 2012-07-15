@@ -4,10 +4,29 @@ import javax.swing.*;
 import java.io.*;
 import java.awt.event.*;
 import java.awt.*;
-import java.util.*;
 
-public class MCRepack extends JFrame implements ActionListener, Runnable
+public class MCRepack extends JFrame implements ActionListener, Runnable, WindowListener
 {
+    @Override public void windowDeactivated(WindowEvent e){}
+    @Override public void windowActivated(WindowEvent e){} 
+    @Override public void windowDeiconified(WindowEvent e){} 
+    @Override public void windowIconified(WindowEvent e){}
+    @Override public void windowClosed(WindowEvent e){}
+    @Override public void windowOpened(WindowEvent e){}
+    
+    @Override
+    public void windowClosing(WindowEvent e)
+    {
+        tray = new MCRepackTrayIcon(main);
+        setVisible(false);
+    }
+    
+    public void hideTrayIcon()
+    {
+        tray = null;
+        System.gc();
+    }
+
     @Override
     public void run()
     {  
@@ -63,18 +82,18 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
             logThread.start();
             try
             {
-                if (options[0] == 0)
+                if (options[0] == 0 && !isStarted)
                 {
                     auth = runtime.exec(System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/authserver.exe");
                     realm = runtime.exec(System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/worldserver.exe");
                 }
                 
-                else if (options[0] == 1)
+                else if (options[0] == 1 && !isStarted)
                 {
                     auth = runtime.exec("./"+System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/authserver");
                     realm = runtime.exec("./"+System.getProperty("java.class.path").split("MCRepack.jar")[0]+"/worldserver");
                 }
-            } catch (IOException io){JOptionPane.showMessageDialog(null, io, "Error", JOptionPane.ERROR_MESSAGE);}
+            } catch (IOException io){JOptionPane.showMessageDialog(null, io, "Error", JOptionPane.ERROR_MESSAGE); isStarted = false;}
         }
         
         else if (e.getActionCommand().equals("Stop"))
@@ -148,12 +167,13 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
         setLocation(100,100);
         setLayout(null);
         setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         Container con = getContentPane();
         con.setBackground(Color.DARK_GRAY);
         initGUIElements();
         getOperatingSystem();
         runtime = Runtime.getRuntime();
+        this.addWindowListener(this);
     }
     
     private void initGUIElements()
@@ -251,7 +271,7 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
         
     public static void main(String[] args) 
     {
-        new MCRepack();
+        main = new MCRepack();
     }
     
     private ObjectInputStream ois;
@@ -271,4 +291,6 @@ public class MCRepack extends JFrame implements ActionListener, Runnable
     private FileReader fr;
     private BufferedReader readLog; 
     private Thread logThread;
+    private MCRepackTrayIcon tray;
+    private static MCRepack main;
 }
